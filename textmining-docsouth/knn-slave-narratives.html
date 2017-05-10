@@ -11773,6 +11773,87 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Text-Mining-DocSouth-Slave-Narrative-Archive">Text Mining DocSouth Slave Narrative Archive<a class="anchor-link" href="#Text-Mining-DocSouth-Slave-Narrative-Archive">&#182;</a></h1><hr>
+<p><em>Note:</em> This is the first in a series of documents and notebooks that will document and evaluate various machine learning and text mining tools for use in literary studies. These notebooks form the practical and critical archive of my book-in-progress, <em>Digital Humanities and the Search for a Method</em>. I have published a critique of some existing methods (Dobson 2016) that takes up some of these concerns and provides some theoretical background for my account of computational methods as used within the humanities.</p>
+<h3 id="Revision-Date-and-Notes:">Revision Date and Notes:<a class="anchor-link" href="#Revision-Date-and-Notes:">&#182;</a></h3><p>05/10/2017: Initial version</p>
+<h3 id="KNearest-Neighbor-(kNN)-period-classification-of-texts">KNearest Neighbor (kNN) period classification of texts<a class="anchor-link" href="#KNearest-Neighbor-(kNN)-period-classification-of-texts">&#182;</a></h3><p>The following Jupyter cells show a very basic classification task using the <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm">kNN</a> algorithm as implemented in Python and with the <a href="http://scikit-learn.org/">scikit-learn</a> package.</p>
+<p>I have manually labelled all the files in the table of contents (toc.csv) for the DocSouth <a href="http://docsouth.unc.edu/neh/">"North American Slave Narratives"</a> database with one of three major periods used in nineteenth and twentieth-century American literary studies:</p>
+<ul>
+<li>antebellum: prior to 1865</li>
+<li>postbellum: after 1865 and before 1900</li>
+<li>twentieth-century: after 1900</li>
+</ul>
+<p>These period categorires are rough and by no means not perfect. Recently, critics have challenged such divisions (Marrs 2015) that are central to the understanding of field of nineteenth-century American literary studies with concepts like "transbellum" that might be capable of helping to better understand works that address the Civil War and its attendant anxities through the "long nineteenth century." The majority of the texts included in the DocSouth archive are first-person autobiographical narratives of lives lived during the antebellum and Civil War years and published in the years leading up to, including, and after the war.</p>
+<h3 id="Complete-(Labeled)-Dataset">Complete (Labeled) Dataset<a class="anchor-link" href="#Complete-(Labeled)-Dataset">&#182;</a></h3><table>
+<thead><tr>
+<th>class</th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antebellum</td>
+<td>149</td>
+</tr>
+<tr>
+<td>postbellum</td>
+<td>70</td>
+</tr>
+<tr>
+<td>twentieth-century</td>
+<td>46</td>
+</tr>
+</tbody>
+</table>
+<p>There are eighteen texts with ambiguous or unknown publication dates. This script will attempt to classify these texts into one of these three periods following the fitting of the 266 labeled texts. I split the 266 texts with known and certain publication dates into two groups: a training set and a testing test. After "fitting" the training set and establishing the neighbors, the code attempts to categorize the testing set. Many questions can and should be asked about the creation of the training set and the labeling of the data. This labeling practice introduces many subjective decisions into what is perceived as an objective (machine and algorithmically generated) process (Dobson 2016, Gillespie 2016).</p>
+<h3 id="Training-Set">Training Set<a class="anchor-link" href="#Training-Set">&#182;</a></h3><p>The training set (the first 133 texts, preserving the order in toc.csv) over-represents the antebellum period and may account for the ability of the classifier to make good predictions for this class. The low number of twentieth century texts, however, does produce excellent classification results.</p>
+<table>
+<thead><tr>
+<th>class</th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antebellum</td>
+<td>64</td>
+</tr>
+<tr>
+<td>postbellum</td>
+<td>46</td>
+</tr>
+<tr>
+<td>twentieth-century</td>
+<td>23</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Text-Pre-processing">Text Pre-processing<a class="anchor-link" href="#Text-Pre-processing">&#182;</a></h4><p>The texts are all used/imported as found in the zip file provided by the DocSouth <a href="http://docsouth.unc.edu/neh/">"North American Slave Narratives"</a> collection. The texts have been encoded in a combination of UTF-8 Unicode and ASCII. Scikit-learn's HashingVectorizer performs some additional pre-processing and that will be examined in the sections below.</p>
+<h4 id="kNN-Background">kNN Background<a class="anchor-link" href="#kNN-Background">&#182;</a></h4><p>The kNN algorithm is a non-parametric algorithm, meaning that it does not require detailed knowledge of the input data and its distribution (Cover and Hart 1967). This algorithm is known as reliable and it is quite simple, especially when compared to some of the more complex machine learning algorithms used as present, to implement and understand. It was originally conceived of as a response to what is called a “discrimination problem”: the categorization of a large number of input points into discrete "boxes." Data are eventually organized into categories, in the case of this script, the three categories of antebellum, postbellum, and twentieth-century.</p>
+<p>The algorithm functions in space and produces each input text as a "neighbor" and has each text "vote" for membership into parcellated neighborhoods. Cover and Hart explain: "If the number of samples is large it makes good sense to use, instead of the single nearest neighbor, the majority vote of the nearest k neighbors" (22). The following code uses the value of "12" for the number of neighbors or the 'k' of kNN.</p>
+<p>The kNN algorithm may give better results for smaller numbers of classes. The performance of particular implementation of kNN and the feature selection algorithm (HashingVectorizer) was better with just the antebellum and postbellum class. Alternative boundaries for the classes (year markers) might also improve results.</p>
+<h4 id="Feature-Selection">Feature Selection<a class="anchor-link" href="#Feature-Selection">&#182;</a></h4><p>While it is non-parametics, the kNN algorithm does require a set of features in order to categorize the input data, the texts. This script operates according to the <em>"bag of words"</em> method in which each text is treated not as a narrative but a collection of unordered and otherwise undiferentiated words. This means that multiple word phrases (aka ngrams) are ignored and much meaning will be removed from the comparative method because of a loss of context.</p>
+<p>In order to select the features by which a text can be compared to another, we need some sort of method that can produce numerical data. I have selected the HashingVectorizer, which is a fast method to generate a list of words/tokens from a file. This returns a numpy compressed sparse row (CSR) matrix that scikit-learn will use in the creation of the neighborhood "map."</p>
+<p>The HashingVectorizer removes a standard 318 English-language stop words and by default does not alter or remove any accents or accented characters in the encoded (UTF-8) format. It also converts all words to lowercase, potentially introducing false positives.</p>
+<p><strong>Issues with HashingVectorizer</strong> This vectorizer works well, but it limits the questions we can ask after it has been run. We cannot, for example, interrogate why a certain text might have been misclassified by examining the words/tokens returned by the vectorizer. This is because the HashingVectorizer returns only indices to features and does not keep the string representation of specific words.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
@@ -11796,18 +11877,34 @@ div#notebook {
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
         <span class="n">input_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
-<span class="n">neh_dataset</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
+<span class="n">docsouth_dataset</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
 <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
 
+<span class="c1"># number of neighbors is set to 12</span>
 <span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
 
-<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">HashingVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> <span class="n">non_negative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                   <span class="n">n_features</span><span class="o">=</span><span class="mi">6125</span><span class="p">,</span><span class="nb">input</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
+<span class="c1"># the HashingVectorizer drops stopwords before processing. It generates</span>
+<span class="c1"># a number of features that are then used to produce the </span>
+<span class="c1"># neighborhoods.</span>
+<span class="c1">#</span>
+<span class="c1"># defaults: </span>
+<span class="c1">#  - n_features: the default is 2 ** 20 or 1048576. </span>
+<span class="c1">#  - stop_words: scikit-learn&#39;s default english stopword list </span>
+<span class="c1">#                contains 318 words </span>
+<span class="c1">#                see: sklearn.feature_extraction.stop_words or</span>
+<span class="c1">#                vectorizer.get_stop_words()</span>
+<span class="c1">#</span>
 
-<span class="n">half_set</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">neh_dataset</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">HashingVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> 
+                               <span class="n">non_negative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                               <span class="nb">input</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
 
-<span class="n">training_data</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">neh_dataset</span><span class="p">[:</span><span class="n">half_set</span><span class="p">])</span>
-<span class="n">test_data</span><span class="o">=</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">neh_dataset</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">])</span>
+<span class="c1"># I split the dataset in half creating two equal-sized lists of 133 texts each.</span>
+<span class="n">half_set</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">docsouth_dataset</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">training_data</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">docsouth_dataset</span><span class="p">[:</span><span class="n">half_set</span><span class="p">])</span>
+<span class="n">test_data</span><span class="o">=</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">docsouth_dataset</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">])</span>
+
 <span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span><span class="n">labels</span><span class="p">[:</span><span class="n">half_set</span><span class="p">])</span>
 </pre></div>
 
@@ -11845,6 +11942,8 @@ div#notebook {
 <span class="n">score</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">pred</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;accuracy:   </span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">score</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">pred</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;confusion matrix:&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">pred</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -11859,15 +11958,19 @@ div#notebook {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>accuracy:   0.707
+<pre>accuracy:   0.714
                    precision    recall  f1-score   support
 
-       antebellum       0.80      0.93      0.86        85
-       postbellum       0.41      0.54      0.46        24
-twentieth-century       1.00      0.08      0.15        24
+       antebellum       0.82      0.94      0.87        85
+       postbellum       0.38      0.50      0.43        24
+twentieth-century       1.00      0.12      0.22        24
 
-      avg / total       0.76      0.71      0.66       133
+      avg / total       0.77      0.71      0.68       133
 
+confusion matrix:
+[[80  5  0]
+ [12 12  0]
+ [ 6 15  3]]
 </pre>
 </div>
 </div>
@@ -11875,6 +11978,16 @@ twentieth-century       1.00      0.08      0.15        24
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The following cell loads and vectorizes (using the above HashingVectorizing method, with the exact same parameters used for the training set) and tests against the trained classifier, an algorithmically uncategorized and ambiguously dated (in the toc.csv) input file, Harriet A. Jacobs's <em>Incidents in the Life of a Slave Girl</em> (1861). The kNN algorithm assigns the label "antebellum" to this text, which was dated as "1861, c1860" in the toc. The text was published in 1861 and that it was categorized correctly might be seen as evidence of correct classfication or perhaps just chance.</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -11911,7 +12024,7 @@ twentieth-century       1.00      0.08      0.15        24
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="List-of-Unspecified-or-Non-Specific-Publication-Dates">List of Unspecified or Non-Specific Publication Dates<a class="anchor-link" href="#List-of-Unspecified-or-Non-Specific-Publication-Dates">&#182;</a></h1><table>
+<h1 id="List-of-Unspecified-or-Ambiguous-Publication-Dates">List of Unspecified or Ambiguous Publication Dates<a class="anchor-link" href="#List-of-Unspecified-or-Ambiguous-Publication-Dates">&#182;</a></h1><table>
 <thead><tr>
 <th>File</th>
 <th>Date</th>
@@ -12049,18 +12162,18 @@ neh-white-white.txt : antebellum
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
 <div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Works-Cited">Works Cited<a class="anchor-link" href="#Works-Cited">&#182;</a></h2><p>Cover T.M. and P. E. Hart. 1967. "Nearest Neighbor Pattern Classification." <em>IEEE Transactions on Information Theory</em> 13, no. 1: 21-27.</p>
+<p>Dobson, James E. 2016. <a href="https://mla.hcommons.org/deposits/item/mla:313/">“Can an Algorithm be Disturbed? Machine Learning, Intrinsic Criticism, and the Digital Humanities.”</a> <em>College Literature</em> 42, no. 4: 543-564.</p>
+<p>Gillespie, Tarleton. 2016. “Algorithm.” In <em>Digital Keywords: A Vocabulary of Information Society and Culture</em>. Edited by Benjamin Peters. Princeton: Princeton University Press.</p>
+<p>Marrs, Cody. 2015. <em>Nineteenth-Century American Literature and the Long Civil War</em>. New York: Cambridge University Press.</p>
 
 </div>
 </div>
-</div>
-
 </div>
     </div>
   </div>
