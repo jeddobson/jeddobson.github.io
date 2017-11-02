@@ -4,18 +4,6 @@
 <title>knn-slave-narratives</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-48287458-3', 'auto');
-  ga('send', 'pageview');
-
-</script>
-
-
 <style type="text/css">
     /*!
 *
@@ -11791,14 +11779,16 @@ div#notebook {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Text-Mining-DocSouth-Slave-Narrative-Archive">Text Mining DocSouth Slave Narrative Archive<a class="anchor-link" href="#Text-Mining-DocSouth-Slave-Narrative-Archive">&#182;</a></h1><hr>
-<p><em>Note:</em> This is the first in <a href="https://jeddobson.github.io/textmining-docsouth/">a series of documents and notebooks</a> that will document and evaluate various machine learning and text mining tools for use in literary studies. These notebooks form the practical and critical archive of my book-in-progress, <em>Digital Humanities and the Search for a Method</em>. I have published a critique of some existing methods (Dobson 2016) that takes up some of these concerns and provides some theoretical background for my account of computational methods as used within the humanities.</p>
-<h3 id="Revision-Date-and-Notes:">Revision Date and Notes:<a class="anchor-link" href="#Revision-Date-and-Notes:">&#182;</a></h3><p>05/10/2017: Initial version (james.e.dobson@dartmouth.edu)</p>
+<p><em>Note:</em> This is the first in <a href="https://jeddobson.github.io/textmining-docsouth/">a series of documents and notebooks</a> that will document and evaluate various machine learning and text mining tools for use in literary studies. These notebooks form the practical and critical archive of my book-in-progress, <em>Digital Humanities and the Search for a Method</em>. I have published a critique of some existing methods (Dobson 2015) that takes up some of these concerns and provides some theoretical background for my account of computational methods as used within the humanities. Each notebook displays code, data, results, interpretation, and critique. I attempt to provide as much explanation of the individual steps and documentation (along with citations of related papers) of the concepts and justification of choices made.</p>
+<h3 id="Revision-Date-and-Notes:">Revision Date and Notes:<a class="anchor-link" href="#Revision-Date-and-Notes:">&#182;</a></h3><ul>
+<li>05/10/2017: Initial version (james.e.dobson@dartmouth.edu)</li>
+<li>08/29/2017: Updated to automatically assign labels and reduced to two classes/periods.</li>
+</ul>
 <h3 id="KNearest-Neighbor-(kNN)-period-classification-of-texts">KNearest Neighbor (kNN) period classification of texts<a class="anchor-link" href="#KNearest-Neighbor-(kNN)-period-classification-of-texts">&#182;</a></h3><p>The following Jupyter cells show a very basic classification task using the <a href="https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm">kNN</a> algorithm as implemented in Python and with the <a href="http://scikit-learn.org/">scikit-learn</a> package.</p>
-<p>I have manually labelled all the files in the table of contents (toc.csv) for the DocSouth <a href="http://docsouth.unc.edu/neh/">"North American Slave Narratives"</a> database with one of three major periods used in nineteenth and twentieth-century American literary studies:</p>
+<p>A simple check to see if the dates in the table of contents ("toc.csv") for the DocSouth <a href="http://docsouth.unc.edu/neh/">"North American Slave Narratives"</a> can be converted to an integer (date as year) is used to assign one of these two classes:</p>
 <ul>
 <li>antebellum: prior to 1865</li>
-<li>postbellum: after 1865 and before 1900</li>
-<li>twentieth-century: after 1900</li>
+<li>postbellum: after 1865 </li>
 </ul>
 <p>These period categories are rough and by no means not perfect. Publication year may have little relation to the content of the text, the source for the vectorizing process and eventual categorization. These dates are what Matthew Jockers calls, within the digital humanities context, catalog metadata (Jockers 2013, 35-62). Recently, critics have challenged such divisions (Marrs 2015) that are central to the understanding of field of nineteenth-century American literary studies with concepts like "transbellum" that might be capable of helping to better understand works that address the Civil War and its attendant anxities through the "long nineteenth century." The majority of the texts included in the DocSouth archive are first-person autobiographical narratives of lives lived during the antebellum and Civil War years and published in the years leading up to, including, and after the war.</p>
 <h3 id="Complete-(Labeled)-Dataset">Complete (Labeled) Dataset<a class="anchor-link" href="#Complete-(Labeled)-Dataset">&#182;</a></h3><table>
@@ -11810,20 +11800,20 @@ div#notebook {
 <tbody>
 <tr>
 <td>antebellum</td>
-<td>149</td>
+<td>143</td>
 </tr>
 <tr>
 <td>postbellum</td>
-<td>70</td>
+<td>109</td>
 </tr>
 <tr>
-<td>twentieth-century</td>
-<td>46</td>
+<td>unknown or ambiguous</td>
+<td>40</td>
 </tr>
 </tbody>
 </table>
-<p>There are eighteen texts with ambiguous or unknown publication dates. This script will attempt to classify these texts into one of these three periods following the fitting of the 266 labeled texts. I split the 266 texts with known and certain publication dates into two groups: a training set and a testing test. After "fitting" the training set and establishing the neighbors, the code attempts to categorize the testing set. Many questions can and should be asked about the creation of the training set and the labeling of the data. This labeling practice introduces many subjective decisions into what is perceived as an objective (machine and algorithmically generated) process (Dobson 2016, Gillespie 2016).</p>
-<h3 id="Training-Set">Training Set<a class="anchor-link" href="#Training-Set">&#182;</a></h3><p>The training set (the first 133 texts, preserving the order in toc.csv) over-represents the antebellum period and may account for the ability of the classifier to make good predictions for this class. The low number of twentieth century texts, however, does produce excellent classification results.</p>
+<p>There are 252 texts with four digit years and eighteen texts with ambiguous or unknown publication dates. This script will attempt to classify these texts into one of these two periods following the "fitting" of the labeled training texts. I split the 252 texts with known and certain publication dates into two groups: a training set and a testing test. After "fitting" the training set and establishing the neighbors, the code attempts to categorize the testing set. Many questions can and should be asked about the creation of the training set and the labeling of the data. This labeling practice introduces many subjective decisions into what is perceived as an objective (machine and algorithmically generated) process (Dobson 2015, Gillespie 2016).</p>
+<h3 id="Training-Data-Set">Training Data Set<a class="anchor-link" href="#Training-Data-Set">&#182;</a></h3><p>The training set (the first 252 texts, preserving the order in "toc.csv") over-represents the antebellum period and may account for the ability of the classifier to make good predictions for this class.</p>
 <table>
 <thead><tr>
 <th>class</th>
@@ -11833,15 +11823,29 @@ div#notebook {
 <tbody>
 <tr>
 <td>antebellum</td>
-<td>64</td>
+<td>96</td>
 </tr>
 <tr>
 <td>postbellum</td>
-<td>46</td>
+<td>81</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Test-Data-Set">Test Data Set<a class="anchor-link" href="#Test-Data-Set">&#182;</a></h3><p>The "testing" dataset is used to validate the classifier. This dataset contains seventy-five texts with known year of publication. This dataset, like the training dataset, overrepresents the antebellum period.</p>
+<table>
+<thead><tr>
+<th>class</th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>antebellum</td>
+<td>47</td>
 </tr>
 <tr>
-<td>twentieth-century</td>
-<td>23</td>
+<td>postbellum</td>
+<td>28</td>
 </tr>
 </tbody>
 </table>
@@ -11871,53 +11875,140 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">sklearn</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">csv</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># load required packages</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
 
-<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="n">HashingVectorizer</span>
-<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="n">TfidfVectorizer</span>
+<span class="kn">from</span> <span class="nn">nltk</span> <span class="k">import</span> <span class="n">pos_tag</span><span class="p">,</span> <span class="n">ne_chunk</span>
+<span class="kn">from</span> <span class="nn">nltk.tokenize</span> <span class="k">import</span> <span class="n">wordpunct_tokenize</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># load local library</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;lib&quot;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">docsouth_utils</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># each dictionary entry in the &#39;list&#39; object returned by load_narratives </span>
+<span class="c1"># contains the following keys:</span>
+<span class="c1">#  &#39;author&#39; = Author of the text (first name, last name)</span>
+<span class="c1">#  &#39;title&#39; = Title of the text</span>
+<span class="c1">#  &#39;year&#39; = Year published as integer or False if not simple four-digit year</span>
+<span class="c1">#  &#39;file&#39; = Filename of text</span>
+<span class="c1">#  &#39;text&#39; = NLTK Text object</span>
+
+<span class="n">neh_slave_archive</span> <span class="o">=</span> <span class="n">docsouth_utils</span><span class="o">.</span><span class="n">load_narratives</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#</span>
+<span class="c1"># establish two simple classes for kNN classification</span>
+<span class="c1"># the &quot;date&quot; field has already been converted to an integer</span>
+<span class="c1"># all texts published before 1865, we&#39;ll call &quot;antebellum&quot;</span>
+<span class="c1"># &quot;postbellum&quot; for those after.</span>
+<span class="c1">#</span>
+
+<span class="n">period_classes</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+
+<span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">neh_slave_archive</span><span class="p">:</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1865</span><span class="p">:</span>
+        <span class="n">period_classes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">file</span><span class="p">,</span><span class="s2">&quot;antebellum&quot;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">False</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1865</span><span class="p">:</span>  
+        <span class="n">period_classes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">file</span><span class="p">,</span><span class="s2">&quot;postbellum&quot;</span><span class="p">])</span>
+
+<span class="c1"># create labels as a list        </span>
+<span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">period_classes</span><span class="p">]</span>
+
+<span class="c1"># create list of filenames </span>
+<span class="n">files</span><span class="o">=</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">period_classes</span><span class="p">]</span>
+
+<span class="c1">#</span>
+<span class="c1"># create training and test datasets</span>
+<span class="c1"># leave out fifty files, the last fifty with integer dates from the toc, for testing</span>
+<span class="c1">#</span>
+
+<span class="n">test_size</span><span class="o">=</span><span class="mi">75</span>
+
+<span class="n">train_labels</span><span class="o">=</span><span class="n">labels</span><span class="p">[:</span><span class="o">-</span><span class="n">test_size</span><span class="p">]</span>
+<span class="n">train_files</span><span class="o">=</span><span class="n">files</span><span class="p">[:</span><span class="o">-</span><span class="n">test_size</span><span class="p">]</span>
+
+<span class="c1"># the last set of texts (test_size) are the &quot;test&quot; dataset (for validation)</span>
+<span class="n">test_labels</span><span class="o">=</span><span class="n">labels</span><span class="p">[</span><span class="o">-</span><span class="n">test_size</span><span class="p">:]</span>
+<span class="n">test_files</span><span class="o">=</span><span class="n">files</span><span class="p">[</span><span class="o">-</span><span class="n">test_size</span><span class="p">:]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="n">HashingVectorizer</span>
 <span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="k">import</span> <span class="n">KNeighborsClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn</span> <span class="k">import</span> <span class="n">metrics</span>
 
-<span class="kn">import</span> <span class="nn">csv</span>
+<span class="c1"># intialize the vectorizer</span>
+<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">HashingVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span>
+                               <span class="nb">input</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span>
+                               <span class="n">non_negative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">input_data</span><span class="o">=</span><span class="p">[]</span>
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;files-labels.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
-    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="s1">&#39;|&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
-        <span class="n">input_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="n">training_data</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">train_files</span><span class="p">)</span>
+<span class="n">test_data</span><span class="o">=</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">test_files</span><span class="p">)</span>
+</pre></div>
 
-<span class="n">docsouth_dataset</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
-<span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
+</div>
+</div>
+</div>
 
-<span class="c1"># number of neighbors is set to 12</span>
-<span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
-
-<span class="c1"># the HashingVectorizer drops stopwords before processing. It generates</span>
-<span class="c1"># a number of features that are then used to produce the </span>
-<span class="c1"># neighborhoods.</span>
-<span class="c1">#</span>
-<span class="c1"># defaults: </span>
-<span class="c1">#  - n_features: the default is 2 ** 20 or 1048576. </span>
-<span class="c1">#  - stop_words: scikit-learn&#39;s default english stopword list </span>
-<span class="c1">#                contains 318 words </span>
-<span class="c1">#                see: sklearn.feature_extraction.stop_words or</span>
-<span class="c1">#                vectorizer.get_stop_words()</span>
-<span class="c1">#</span>
-
-<span class="n">vectorizer</span> <span class="o">=</span> <span class="n">HashingVectorizer</span><span class="p">(</span><span class="n">stop_words</span><span class="o">=</span><span class="s1">&#39;english&#39;</span><span class="p">,</span> 
-                               <span class="n">non_negative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                               <span class="nb">input</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span>
-
-<span class="c1"># I split the dataset in half creating two equal-sized lists of 133 texts each.</span>
-<span class="n">half_set</span><span class="o">=</span><span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">docsouth_dataset</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
-
-<span class="n">training_data</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">docsouth_dataset</span><span class="p">[:</span><span class="n">half_set</span><span class="p">])</span>
-<span class="n">test_data</span><span class="o">=</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">docsouth_dataset</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">])</span>
-
-<span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span><span class="n">labels</span><span class="p">[:</span><span class="n">half_set</span><span class="p">])</span>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># display sizes</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;training data:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">period</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;postbellum&#39;</span><span class="p">,</span> <span class="s1">&#39;antebellum&#39;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="n">period</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="n">train_labels</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">period</span><span class="p">))</span>
+    
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;test data:&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">period</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;postbellum&#39;</span><span class="p">,</span> <span class="s1">&#39;antebellum&#39;</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span><span class="n">period</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="n">test_labels</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">period</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -11929,13 +12020,49 @@ div#notebook {
 
 
 <div class="output_area">
-<div class="prompt output_prompt">Out[1]:</div>
+<div class="prompt"></div>
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>training data:
+  postbellum : 81
+  antebellum : 96
+test data:
+  postbellum : 28
+  antebellum : 47
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># run kNN and fit training data</span>
+<span class="n">knn</span> <span class="o">=</span> <span class="n">KNeighborsClassifier</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">13</span><span class="p">)</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span><span class="n">train_labels</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+<div class="prompt output_prompt">Out[7]:</div>
 
 
 
 <div class="output_text output_subarea output_execute_result">
 <pre>KNeighborsClassifier(algorithm=&#39;auto&#39;, leaf_size=30, metric=&#39;minkowski&#39;,
-           metric_params=None, n_jobs=1, n_neighbors=12, p=2,
+           metric_params=None, n_jobs=1, n_neighbors=13, p=2,
            weights=&#39;uniform&#39;)</pre>
 </div>
 
@@ -11947,15 +12074,16 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pred</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
-<span class="n">score</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">pred</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Predict results from the test data and check accuracy</span>
+<span class="n">pred</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;accuracy:   </span><span class="si">%0.3f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">score</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">pred</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">classification_report</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">pred</span><span class="p">))</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;confusion matrix:&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">labels</span><span class="p">[</span><span class="n">half_set</span><span class="p">:</span><span class="n">half_set</span><span class="o">*</span><span class="mi">2</span><span class="p">],</span> <span class="n">pred</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">metrics</span><span class="o">.</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">test_labels</span><span class="p">,</span> <span class="n">pred</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -11970,19 +12098,17 @@ div#notebook {
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>accuracy:   0.714
-                   precision    recall  f1-score   support
+<pre>accuracy:   0.813
+             precision    recall  f1-score   support
 
-       antebellum       0.82      0.94      0.87        85
-       postbellum       0.38      0.50      0.43        24
-twentieth-century       1.00      0.12      0.22        24
+ antebellum       0.81      0.91      0.86        47
+ postbellum       0.82      0.64      0.72        28
 
-      avg / total       0.77      0.71      0.68       133
+avg / total       0.81      0.81      0.81        75
 
 confusion matrix:
-[[80  5  0]
- [12 12  0]
- [ 6 15  3]]
+[[43  4]
+ [10 18]]
 </pre>
 </div>
 </div>
@@ -11996,47 +12122,8 @@ confusion matrix:
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The following cell loads and vectorizes (using the above HashingVectorizing method, with the exact same parameters used for the training set) and tests against the trained classifier, an algorithmically uncategorized and ambiguously dated (in the toc.csv) input file, Harriet A. Jacobs's <em>Incidents in the Life of a Slave Girl</em> (1861). The kNN algorithm assigns the label "antebellum" to this text, which was dated as "1861, c1860" in the toc. The text was published in 1861 and that it was categorized correctly might be seen as evidence of correct classfication or perhaps just chance.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">jacobs_test</span><span class="o">=</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">([</span><span class="s2">&quot;fpn-jacobs-jacobs.txt&quot;</span><span class="p">])</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">jacobs_test</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-<div class="prompt"></div>
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>[&#39;antebellum&#39;]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="List-of-Unspecified-or-Ambiguous-Publication-Dates">List of Unspecified or Ambiguous Publication Dates<a class="anchor-link" href="#List-of-Unspecified-or-Ambiguous-Publication-Dates">&#182;</a></h1><table>
+<h2 id="Prediction-of-unclassified-data">Prediction of unclassified data<a class="anchor-link" href="#Prediction-of-unclassified-data">&#182;</a></h2><p>The following cell loads and vectorizes (using the above HashingVectorizing method, with the exact same parameters used for the training set) and tests against the trained classifier, all the algorithmically uncategorized and ambiguously dated (in the toc.csv) input files.</p>
+<h3 id="Partial-list-of-Unspecified-or-Ambiguous-Publication-Dates">Partial list of Unspecified or Ambiguous Publication Dates<a class="anchor-link" href="#Partial-list-of-Unspecified-or-Ambiguous-Publication-Dates">&#182;</a></h3><table>
 <thead><tr>
 <th>File</th>
 <th>Date</th>
@@ -12123,17 +12210,16 @@ confusion matrix:
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">predict_files</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;church-hatcher-hatcher.txt&quot;</span><span class="p">,</span><span class="s2">&quot;fpn-jacobs-jacobs.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-aga-aga.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-anderson-anderson.txt&quot;</span><span class="p">,</span>
-               <span class="s2">&quot;neh-brownj-brownj.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-carolinatwin-carolinatwin.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-delaney-delaney.txt&quot;</span><span class="p">,</span>
-               <span class="s2">&quot;neh-equiano1-equiano1.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-equiano2-equiano2.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-henry-henry.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-jonestom-jones.txt&quot;</span><span class="p">,</span>
-               <span class="s2">&quot;neh-latta-latta.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-leewilliam-lee.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-millie-christine-millie-christine.txt&quot;</span><span class="p">,</span>
-               <span class="s2">&quot;neh-parkerh-parkerh.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-pomp-pomp.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-washstory-washin.txt&quot;</span><span class="p">,</span><span class="s2">&quot;neh-white-white.txt&quot;</span><span class="p">]</span>
-<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">predict_files</span><span class="p">:</span>
-    <span class="n">pred</span><span class="o">=</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="s2">&quot;:&quot;</span><span class="p">,</span><span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">pred</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># predict class or period membership for all texts without</span>
+<span class="c1"># four digit years</span>
+<span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">neh_slave_archive</span><span class="p">:</span>
+    <span class="n">file</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;author&#39;</span><span class="p">],</span><span class="s2">&quot;, &quot;</span><span class="p">,</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;   &quot;</span><span class="p">,</span><span class="n">knn</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">vectorizer</span><span class="o">.</span><span class="n">transform</span><span class="p">([</span><span class="n">entry</span><span class="p">[</span><span class="s1">&#39;file&#39;</span><span class="p">]])))</span>
 </pre></div>
 
 </div>
@@ -12148,24 +12234,86 @@ confusion matrix:
 <div class="prompt"></div>
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>church-hatcher-hatcher.txt : postbellum
-fpn-jacobs-jacobs.txt : antebellum
-neh-aga-aga.txt : antebellum
-neh-anderson-anderson.txt : antebellum
-neh-brownj-brownj.txt : antebellum
-neh-carolinatwin-carolinatwin.txt : antebellum
-neh-delaney-delaney.txt : antebellum
-neh-equiano1-equiano1.txt : antebellum
-neh-equiano2-equiano2.txt : antebellum
-neh-henry-henry.txt : postbellum
-neh-jonestom-jones.txt : antebellum
-neh-latta-latta.txt : postbellum
-neh-leewilliam-lee.txt : twentieth-century
-neh-millie-christine-millie-christine.txt : antebellum
-neh-parkerh-parkerh.txt : antebellum
-neh-pomp-pomp.txt : antebellum
-neh-washstory-washin.txt : postbellum
-neh-white-white.txt : antebellum
+<pre>William S. White ,  The African Preacher. An Authentic Narrative
+    [&#39;antebellum&#39;]
+Henry  Parker ,  Autobiography of Henry Parker
+    [&#39;antebellum&#39;]
+Thomas W. Henry ,  Autobiography of Rev. Thomas W. Henry, of the A. M. E. Church
+    [&#39;postbellum&#39;]
+Booker T. Washington ,  An Autobiography: The Story of My Life and Work
+    [&#39;postbellum&#39;]
+  No Author ,  Biographical Sketch of Millie Christine, the Carolina Twin, Surnamed the Two-Headed Nightingale and the Eighth Wonder of the World
+    [&#39;antebellum&#39;]
+Josephine  Brown ,  Biography of an American Bondman, by His Daughter
+    [&#39;antebellum&#39;]
+  Pomp ,  Dying Confession of Pomp, A Negro Man, Who Was Executed at Ipswich, on the 6th August, 1795, for Murdering Capt. Charles Furbush, of Andover, Taken from the Mouth of the Prisoner, and Penned by Jonathan Plummer, Jun.
+    [&#39;antebellum&#39;]
+Thomas H. Jones ,  Experience and Personal Narrative of Uncle Tom Jones; Who Was for Forty Years a Slave. Also the Surprising Adventures of Wild Tom, of the Island Retreat, a Fugitive Negro from South Carolina
+    [&#39;antebellum&#39;]
+William  Parker ,  The Freedman&#39;s Story: In Two Parts
+    [&#39;antebellum&#39;]
+Lucy A. Delaney ,  From the Darkness Cometh the Light or Struggles for Freedom
+    [&#39;antebellum&#39;]
+M. L. Latta ,  The History of My Life and Work. Autobiography by Rev. M. L. Latta, A.M., D.D.
+    [&#39;postbellum&#39;]
+  Millie-Christine ,  The History of the Carolina Twins: Told in &#34;Their Own Peculiar Way&#34; By &#34;One of Them&#34;
+    [&#39;antebellum&#39;]
+William Mack Lee ,  History of the Life of Rev. Wm. Mack Lee: Body Servant of General Robert E. Lee Through the Civil War: Cook from 1861 to 1865
+    [&#39;postbellum&#39;]
+Selim  Aga ,  Incidents Connected with the Life of Selim Aga, a Native of Central Africa
+    [&#39;antebellum&#39;]
+Harriet A. Jacobs ,  Incidents in the Life of a Slave Girl. Written by Herself
+    [&#39;postbellum&#39;]
+Thomas  Anderson ,  Interesting Account of Thomas Anderson, a Slave, Taken from His Own Lips. Ed. J. P. Clark
+    [&#39;antebellum&#39;]
+Olaudah  Equiano ,  The Interesting Narrative of the Life of Olaudah Equiano, or Gustavus Vassa, the African. Written by Himself. Vol. I.
+    [&#39;antebellum&#39;]
+Olaudah  Equiano ,  The Interesting Narrative of the Life of Olaudah Equiano, or Gustavus Vassa, the African. Written by Himself. Vol. II.
+    [&#39;antebellum&#39;]
+William E. Hatcher ,  John Jasper: The Unmatched Negro Philosopher and Preacher
+    [&#39;postbellum&#39;]
+  Arthur ,  The Life, and Dying Speech of Arthur, a Negro Man; Who Was Executed at Worcester, October 10, 1768. For a Rape Committed on the Body of One Deborah Metcalfe
+    [&#39;antebellum&#39;]
+John  Jea ,  The Life, History, and Unparalleled Sufferings of John Jea, the African Preacher. Compiled and Written by Himself
+    [&#39;antebellum&#39;]
+Stephen  Smith ,  Life, Last Words and Dying Speech of Stephen Smith, a Black Man, Who Was Executed at Boston This Day Being Thursday, October 12, 1797 for Burglary
+    [&#39;antebellum&#39;]
+Alexander  Walters ,  My Life and Work
+    [&#39;postbellum&#39;]
+Andrew  Jackson ,  Narrative and Writings of Andrew Jackson, of Kentucky; Containing an Account of His Birth, and Twenty-Six Years of His Life While a Slave; His Escape; Five Years of Freedom, Together with Anecdotes Relating to Slavery; Journal of One Year&#39;s Travels; Sketches, etc. Narrated by Himself; Written by a Friend
+    [&#39;antebellum&#39;]
+James  Williams ,  A Narrative of Events Since the First of August, 1834, By James Williams, an Apprenticed Labourer in Jamaica
+    [&#39;postbellum&#39;]
+James  Curry ,  Narrative of James Curry, A Fugitive Slave
+    [&#39;antebellum&#39;]
+T. C. Upham ,  Narrative of Phebe Ann Jacobs
+    [&#39;postbellum&#39;]
+W.  Mallory ,  Old Plantation Days
+    [&#39;antebellum&#39;]
+Walter L. Fleming ,  &#34;Pap&#34; Singleton, The Moses of the Colored Exodus
+    [&#39;postbellum&#39;]
+  No Author ,  Recollections of Slavery by a Runaway Slave
+    [&#39;antebellum&#39;]
+Charles  Stuart ,  Reuben Maddison: A True Story
+    [&#39;antebellum&#39;]
+George F. Bragg ,  Richard Allen and Absalom Jones, by the Rev. George F. Bragg, in Honor of the Centennial of the African Methodist Episcopal Church, Which Occurs in the Year 1916
+    [&#39;postbellum&#39;]
+  No Author ,  The Royal African: or, Memoirs of the Young Prince of Annamaboe. Comprehending a Distinct Account of His Country and Family; His Elder Brother&#39;s Voyage to France, and Reception there; the Manner in Which Himself Was Confided by His Father to the Captain Who Sold Him; His Condition While a Slave in Barbadoes; the True Cause of His Bring Redeemed; His Voyage from Thence; and Reception Here in England. Interspers&#39;d Throughout with Several Historical Remarks on the Commerce of the European Nations, Whose Subjects Frequent the Coast of Guinea. To which is Prefixed a Letter from the Author to a Person of Distinction, in Reference to Some Natural Curiosities in Africa; as Well as Explaining the Motives which Induced Him to Compose These Memoirs.
+    [&#39;antebellum&#39;]
+  No Author ,  A Sketch of Henry Franklin and Family.
+    [&#39;postbellum&#39;]
+Lewis  Charlton ,  Sketch of the Life of Mr. Lewis Charlton, and Reminiscences of Slavery
+    [&#39;antebellum&#39;]
+Mark  Twain ,  A True Story, Repeated Word for Word As I Heard It. From The Atlantic Monthly. Nov. 1874: 591-594
+    [&#39;postbellum&#39;]
+Emma J. Ray ,  Twice Sold, Twice Ransomed: Autobiography of Mr. and Mrs. L. P. Ray
+    [&#39;postbellum&#39;]
+Gustavus L. Foster ,  Uncle Johnson, the Pilgrim of Six Score Years
+    [&#39;postbellum&#39;]
+Booker T. Washington ,  Up from Slavery: An Autobiography
+    [&#39;postbellum&#39;]
+Thomas William Burton ,  What Experience Has Taught Me: An Autobiography of Thomas William Burton
+    [&#39;postbellum&#39;]
 </pre>
 </div>
 </div>
