@@ -1,8 +1,17 @@
 #
+# utility functions for generating material for DHSM manuscript
+#
+# James E. Dobson
+# Dartmouth College
+# James.E.Dobson@Dartmouth.EDU
+# http://www.cultcritlab.org
+
+#
 # load the entire archive
 #
 
-def load_narratives():
+def load_narratives(options="default"):
+
 	import os
 	import csv
 	import nltk
@@ -35,8 +44,13 @@ def load_narratives():
 
 				entry['year'] = year
 				text = open(file).read()
-				tokens = nltk.word_tokenize(text)
-				entry['text'] = nltk.Text(tokens)
+
+				# option "notokenize" will not read and tokenize texts
+				if options != "notokenize":
+					tokens = nltk.word_tokenize(text)
+					entry['text'] = nltk.Text(tokens)
+
+				# add entry
 				neh_slave_archive.append(entry)
 			row_count = row_count + 1
 	
@@ -55,7 +69,7 @@ def load_narratives():
 #  - removes the above 127 NLTK-defined stopwords
 #  - removes an additional set of stopwords
 
-def preprocess(text,options):
+def preprocess(text,options="default"):
 	# default: drop to lowercase and remove non alpha characters
 	pp_text = [word for word in text if word.isalpha() ]
 	pp_text = [word.lower() for word in pp_text]
