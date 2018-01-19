@@ -11778,9 +11778,55 @@ div#notebook {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Text-Mining-DocSouth-Slave-Narrative-Archive">Text Mining DocSouth Slave Narrative Archive<a class="anchor-link" href="#Text-Mining-DocSouth-Slave-Narrative-Archive">&#182;</a></h1><hr>
+<h1 id="Text-Mining-DocSouth-Slave-Narrative-Archive">Text Mining DocSouth Slave Narrative Archive<a class="anchor-link" href="#Text-Mining-DocSouth-Slave-Narrative-Archive">&#182;</a></h1><p>by James E. Dobson (James.E.Dobson@Dartmouth.edu)</p>
+<hr>
 <p><em>Note:</em> This is one in <a href="https://jeddobson.github.io/textmining-docsouth/">a series of documents and notebooks</a> that will document and evaluate various machine learning and text mining tools for use in literary studies. These notebooks form the practical and critical archive of my book-in-progress, <em>Digital Humanities and the Search for a Method</em>. I have published a critique of some existing methods (Dobson 2016) that takes up some of these concerns and provides some theoretical background for my account of computational methods as used within the humanities.</p>
-<h3 id="Revision-Date-and-Notes:">Revision Date and Notes:<a class="anchor-link" href="#Revision-Date-and-Notes:">&#182;</a></h3><p>07/31/2017: Initial version (james.e.dobson@dartmouth.edu)</p>
+<h3 id="Revision-Date-and-Notes:">Revision Date and Notes:<a class="anchor-link" href="#Revision-Date-and-Notes:">&#182;</a></h3><pre>
+07/31/2017: Initial version (james.e.dobson@dartmouth.edu)
+01/18/2018: Updated with explanation of isalpha() test
+</pre>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Notes-on-Text-Pre-Processing-for-the-Humanities">Notes on Text Pre-Processing for the Humanities<a class="anchor-link" href="#Notes-on-Text-Pre-Processing-for-the-Humanities">&#182;</a></h2><h2 id="The-pre-processing-of-text-is-a-language-and-potentially-genre-dependent-activity.">The pre-processing of text is a language and potentially genre-dependent activity.<a class="anchor-link" href="#The-pre-processing-of-text-is-a-language-and-potentially-genre-dependent-activity.">&#182;</a></h2><p>After tokenizing with <a href="www.nltk.org/">NLTK</a>, testing a string to see if it is alphabetic is a common way of removing a number of textual artifacts, such as punctuation, that might add “noise” to our data:</p>
+<p>Here, for instance, we see a common way of testing for the presence of quotation marks:</p>
+<pre>
+In [136]: '”'.isalpha()
+Out[136]: False
+</pre><p>The following iterates through a source input list object, preserving only words that contain alphabetical characters, and returning back as output a new list for further steps in a preprocessing workflow:</p>
+<pre>
+alpha_words = [word for word in input_text if word.isalpha() ]
+</pre><p>This also removes numbers, for example, those used in ordinals:</p>
+<pre>
+In [139]: '2nd'.isalpha()
+Out[139]: False
+In [140]: 'second'.isalpha()
+Out[140]: True
+</pre><p>And any word that contains non-alphabetical characters will be removed with this method:</p>
+<pre>
+In [141]: "self-emancipated".isalpha()
+Out[141]: False
+</pre><p>We can, instead, conduct the above test only on single character words. This might, however, require some additional steps to strip stray punctuation from the beginning and endings of words. The following ordered list segment demonstrates the advantages and problems of this method. We have now preserved the dates, the title ‘Mr.’, and the last name. The simple isalpha() test would have dropped five of the following nine words:</p>
+<pre>
+'association', 'march', '31', '1845', '“no', 'matter', 'said', 'mr.', "o'connell"
+</pre><p>We want now to make sure that we remove the leading ‘“’ from ‘no’ but not remove the period that follows “mr.”</p>
+<pre>
+'association', 'march', '31', '1845', 'no', 'matter', 'said', 'mr.', "o'connell"
+</pre><p>Pre-processing is nothing if not an iterative process.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Pre-Processing-of-DocSouth-Texts">Pre-Processing of DocSouth Texts<a class="anchor-link" href="#Pre-Processing-of-DocSouth-Texts">&#182;</a></h3>
 </div>
 </div>
