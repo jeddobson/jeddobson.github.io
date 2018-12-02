@@ -1,0 +1,187 @@
+/* 
+ * stylesheet for personal website 
+ * Jed Dobson
+ *
+ */
+
+body {
+        font: 75% georgia, sans-serif;
+        line-height: 1.88889;
+        color: #555753;
+	background: #E0E0E0;
+  	-webkit-background-size: cover;
+  	-moz-background-size: cover;
+  	-o-background-size: cover;
+  	background-size: cover;
+        margin: 0;
+        padding: 0;
+        }
+
+#container {	
+	background: #FFFFFF;
+	opacity: 0.98;
+	//background: transparent;
+	width: 85%;
+	margin: 20px auto;
+	padding: 2px 0;
+	padding-left: 15px;
+	padding-right: 10px;
+	border: 2px solid #a0a0a0;
+}
+
+#epigraph {
+	font-size: 12px;
+  	padding: 2em 0;
+  	margin-top: 2em;
+	padding-left: 20px;
+	width: 40%;
+}
+
+
+#box1 {
+	font-size: 15px;
+  	padding: 2em 0;
+  	margin-top: 2em;
+}
+
+#box2 {
+  	//background-color: rgba(136,188,159,0.5);
+	background: #E0E0E0;
+	font-size: 15px;
+  	margin-top: 2em;
+  	padding: 15px;
+}
+
+.floatright
+{
+float: right;
+font-size: 15px;
+margin: 0 0 10px 10px;
+background-color: #fff;
+padding: 10px;
+}
+
+#header {
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-bottom: 5px;
+    font: 75% georgia, sans-serif;
+    font-size: 18px;
+    text-align: center;
+    border-bottom: 1px solid black;
+}
+
+#header ul.header_items { 
+  list-style: none;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+#header li a {
+  display: block;
+  text-align: center;
+  padding: 12px 15px;
+  text-decoration: none;
+  color: #006400;  
+  background-color: transparent;
+}
+
+#header ul.header_items li {
+  float: left;
+}
+
+
+#header li.header_items a:hover {
+  text-decoration: none;
+  color: #2E8B57;
+}
+
+
+h1 {
+	margin: 0px;
+	font-size: 20px;
+}
+
+h2 {
+	margin: 0px;
+	font-size: 14px;
+	font-weight: bold;
+	letter-spacing: 1px;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left: 20px;
+}
+
+h3 {
+	margin: 0px;
+	font-size: 13px;
+	font-weight: bold;
+	color: #333;
+	letter-spacing: 1px;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left: 20px;
+}
+
+.h3.nopad {
+        font-size: 13px;
+        font-weight: bold;
+}
+
+h4 {
+	margin: 0px;
+	font-size: 12px;
+	font-weight: bold;
+	color: #666;
+	letter-spacing: 1px;
+	padding-top: 5px;
+	padding-right: 5px;
+	padding-bottom: 5px;
+	padding-left: 20px;
+	text-transform: uppercase;
+}
+
+//img { border: none; vertical-align: middle; }
+
+p {
+    margin: 0.5em 0em 1em 0em;
+    line-height: 1.5em;
+}
+
+p a {
+    text-decoration: underline;
+}
+
+/* Links */
+a:visited { color: #006400; background-color: transparent; }
+a:link { color: #006400; background-color: transparent; }
+a:active  { color: red;   background-color: transparent; }
+a:hover, a:focus { text-decoration: underline; color: #2E8B57; }
+
+p img {
+    border: 0;
+    margin: 0;
+}
+
+.quote {
+       font-size: 10pt;
+       font-style: italic;
+}
+.attrib {
+       font-size: 10pt;
+}
+
+.publication {
+	font-size: 10pt;
+	padding-bottom: 9px;
+	padding-left: 30px;
+}
+
+.publication .source {
+	font-style: italic;
+}
