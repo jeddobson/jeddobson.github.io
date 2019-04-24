@@ -85,17 +85,15 @@ def preprocess(text,options="default"):
 	return(pp_text)
 
 
-def stats(input_file):
+def stats(text):
         import nltk
-        fstream = open(input_file,encoding='utf-8')
-        raw_text = fstream.read()
-        tokens = nltk.word_tokenize(raw_text)
+        tokens = nltk.word_tokenize(text)
         text = nltk.Text(tokens)
         lines = raw_text.count('\n')
         pre_processed_text = preprocess(text)
         vocab = len(set(pre_processed_text))
         lex_variety=(float(len(tokens)) / float(vocab))
-        print("dataset: ", input_file)
+        print("object:",input_file)
         print("total number of lines: " + str(lines))
         print("total number of words: " + str(len(tokens)))
         print("total number of unique non-stop words: " + str(vocab))
