@@ -114,6 +114,50 @@ padding: 10px;
 }
 
 
+/* Needed so the dropdown positions relative to its parent item */
+.dropdown {
+  position: relative;
+}
+
+/* Hide the menu by default */
+.dropdown_menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: max-content;
+  min-width: 180px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+}
+
+/* Show on hover or keyboard focus */
+.dropdown:hover .dropdown_menu,
+.dropdown:focus-within .dropdown_menu {
+  display: block;
+}
+
+.dropdown_menu li {
+  display: block;       /* stack vertically, even if parent items are inline */
+}
+
+.dropdown_menu a {
+  display: block;
+  padding: 10px 14px;
+  color: #333;
+  text-decoration: none;
+}
+
+.dropdown_menu a:hover {
+  background: #f0f0f0;
+}
+
+
 h1 {
 	margin: 0px;
 	font-size: 20px;
